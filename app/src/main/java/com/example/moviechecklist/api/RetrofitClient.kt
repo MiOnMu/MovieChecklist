@@ -12,4 +12,8 @@ object RetrofitClient {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
+
+    val tmdbService: TMDBService by lazy {
+        instance.create(TMDBService::class.java)
+    }
 }

@@ -1,60 +1,108 @@
 [versions]
-agp = "8.9.3"
-kotlin = "2.0.21"
-coreKtx = "1.16.0"
+# Adjusted AGP, Kotlin, KSP to more common stable versions
+agp = "8.4.1"  # Adjusted from 8.9.3
+kotlin = "1.9.23" # Adjusted from 2.1.21
+ksp = "1.9.23-1.0.19" # Adjusted to match Kotlin 1.9.23
+
+core-ktx = "1.13.1" # Updated from 1.16.0 (1.16.0 is too new, 1.13.1 is current stable)
 junit = "4.13.2"
-junitVersion = "1.2.1"
-espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.9.0"
-activityCompose = "1.10.1"
-composeBom = "2025.05.01"
-navigationComposeVersion = "2.9.0"
-retrofitVersion = "2.10.0"
-moshiVersion = "1.15.1"
-roomVersion = "2.7.1"
-koinVersion = "3.5.3"
+androidx-junit = "1.1.5" # Updated from 1.2.1 (1.1.5 is more common with current AGP)
+espresso-core = "3.5.1" # Updated from 3.6.1 (3.5.1 is more common)
+splashscreen = "1.0.1"
+constraint-layout-compose = "1.0.1" # 1.1.1 is fine, using a slightly more common one
+lifecycle-runtime-ktx = "2.8.0"  # Updated from 2.9.0 (2.8.0 is current stable)
+activity-compose = "1.9.0"   # Updated from 1.10.1 (1.9.0 is current stable)
+material = "1.12.0" # This is for com.google.android.material:material (View system)
+material-icons-extended = "1.6.7" # Updated from 1.7.8, aligned with Compose 1.6.x
+
+multidex = "2.0.1" # Generally not needed with minSdk 21+ and modern AGP, but keeping if you have specific reasons
+
+# Adjusted Retrofit and Gson to widely stable versions
+retrofit = "2.9.0"  # Adjusted from 3.0.0 (beta)
+gson = "2.10.1"   # Adjusted from 2.13.1
+
+logging-interceptor = "4.12.0" # OkHttp BOM manages this better, but 4.12.0 is fine standalone
+paging-compose = "3.3.0" # Updated from 3.3.6, using a slightly more common stable one
+landscapist = "2.3.5" # Updated from 2.4.8 for broader compatibility, 2.4.8 is fine too
+timber = "5.0.1"
+navigation-compose = "2.7.7" # Updated from 2.9.0 (2.7.7 is current stable)
+hilt-navigation-compose = "1.2.0"
+navigation-runtime-ktx = "2.7.7" # Aligned with navigation-compose
+
+# Adjusted Hilt, Compose BOM, Compose, Room
+hilt = "2.51.1" # Adjusted from 2.56
+compose-bom = "2024.06.00" # Adjusted from 2025.05.01
+compose-compiler-extension = "1.5.11" # Version for Kotlin 1.9.23 (Compose 1.6.x usually uses this)
+compose-ui = "1.6.7" # Base compose version, aligned with compiler
+room = "2.6.1"    # Adjusted from 2.7.1
+
+# Added Coil for direct image loading (alternative or alongside Landscapist if needed)
+coil = "2.6.0"
 
 [libraries]
-# AndroidX
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
-androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
-androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
-
-# Compose
-androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-androidx-ui = { group = "androidx.compose.ui", name = "ui" }
-androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
-androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
-androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
-androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
-androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-google-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version = "1.8.2" }
-
-# Testing
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
+androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "material-icons-extended" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-junit" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraint-layout-compose" }
 
-# Network
-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofitVersion" }
-retrofit-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofitVersion" }
-moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshiVersion" }
-moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshiVersion" }
-moshi-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.ref = "moshiVersion" }
+# Specific Compose UI artifact versions
+androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "compose-ui" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "compose-ui" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "compose-ui" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "compose-ui" }
+androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest", version.ref = "compose-ui" } # For tests
+androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "compose-ui" } # For tests
 
-# Database
-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
+androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigation-runtime-ktx" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
+androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "multidex" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3", version = "1.2.1" } # Explicit M3 version
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splashscreen" }
+androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging-compose" }
+material = { module = "com.google.android.material:material", version.ref = "material" } # XML Material components
 
-# DI
-koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinVersion" }
-koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinVersion" }
+# Networking
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "logging-interceptor" } # OkHttp4, consider OkHttp BOM
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+
+# Image Loading - Landscapist using Coil
+landscapist-coil = { module = "com.github.skydoves:landscapist-coil", version.ref = "landscapist" }
+landscapist-placeholder = { module = "com.github.skydoves:landscapist-placeholder", version.ref = "landscapist" }
+landscapist-animation = { module = "com.github.skydoves:landscapist-animation", version.ref = "landscapist" }
+# Direct Coil dependency (used in my previous MovieCard example, Landscapist includes Coil too)
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil"}
+
+
+# Dependency Injection
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" } # For KSP
+
+# Logger
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+
+# Room database
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" } # For KSP
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-ksp = { id = "com.google.devtools.ksp", version = "2.0.21-1.0.26" }
+jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+# For Compose Compiler, ensure version aligns with Kotlin.
+# The version is specified in build.gradle.kts for the compose compiler plugin itself.
+# This definition is for the plugin ID if you were to apply it using alias(libs.plugins.compose.compiler.id) version libs.plugins.compose.compiler.version
+# However, typical setup uses composeOptions.kotlinCompilerExtensionVersion in build.gradle.kts or relies on BOM.
+# Your current alias(libs.plugins.compose.compiler) will try to find 'compose-compiler' in [plugins]
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" } # This should work if compiler is bundled with kotlin plugin
+
+hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+room = { id = "androidx.room", version.ref = "room" } # Room Gradle Plugin

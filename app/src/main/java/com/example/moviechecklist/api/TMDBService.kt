@@ -9,6 +9,7 @@ interface TMDBService {
     suspend fun getMoviesByGenre(
         @Query("api_key") apiKey: String,
         @Query("with_genres") genreId: Int,
-        @Query("sort_by") sortBy: String = "popularity.desc"
+        @Query("sort_by") sortBy: String = "popularity.desc",
+        @Query("page") page: Int = 1 // Added page for potentially more results
     ): MovieResponse
 }

@@ -1,8 +1,3 @@
 <resources>
     <string name="app_name">MovieChecklist</string>
-
-    <string name="movie_list_title">Movie Database</string>
-    <string name="watched_title">Watched Movies</string>
-    <string name="wishlist_title">Wishlist</string>
-
 </resources>

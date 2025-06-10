@@ -24,7 +24,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.yourpackage.moviechecklist.R // Ensure you have a placeholder drawable
+import com.yourpackage.moviechecklist.R
 import com.yourpackage.moviechecklist.data.remote.dto.MovieResultDto
 import com.yourpackage.moviechecklist.data.local.MovieStatus
 import com.yourpackage.moviechecklist.ui.navigation.Screen
@@ -50,7 +50,6 @@ fun SearchScreen(
         }
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
-            // Search Bar
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { viewModel.onSearchQueryChanged(it) },
@@ -70,7 +69,6 @@ fun SearchScreen(
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = {
                     keyboardController?.hide()
-                    // viewModel.performRemoteSearch(searchQuery) // Or handled by onSearchQueryChanged debounce
                 })
             )
 
@@ -110,13 +108,10 @@ fun SearchScreen(
                                     movie = movie,
                                     movieStatus = movieStatus,
                                     onItemClick = {
-                                        // Check if movie is already in local DB, then navigate
-                                        // For now, directly navigate to detail to add or view
                                         navController.navigate(Screen.MovieDetail.createRoute(movie.id, movie.mediaType ?: "movie"))
                                     },
                                     onAddClick = {
                                         viewModel.addMovieToPlanned(movie)
-                                        // Optionally show a toast or snackbar
                                     }
                                 )
                             }
@@ -156,10 +151,10 @@ fun SearchResultItem(
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(movie.posterPath?.let { Constants.TMDB_IMAGE_BASE_URL_W500 + it } ?: "")
+                    .data(movie.posterPath?.let { Constants.TMDB_IMAGE_BASE_URL + it } ?: "")
                     .crossfade(true)
-                    .placeholder(R.drawable.ic_launcher_background) // Replace with your placeholder
-                    .error(R.drawable.ic_launcher_background)       // Replace with your error placeholder
+                    .placeholder(R.drawable.ic_launcher_background)
+                    .error(R.drawable.ic_launcher_background)
                     .build(),
                 contentDescription = movie.title ?: movie.name,
                 modifier = Modifier.width(60.dp).height(90.dp),
@@ -179,16 +174,14 @@ fun SearchResultItem(
             ) {
                 when (movieStatus) {
                     MovieStatus.WATCHED -> {
-                        // Movie is already marked as Watched
                         Icon(
                             imageVector = Icons.Filled.CheckCircle,
                             contentDescription = "Already Watched",
-                            tint = Color(0xFF4CAF50) // A nice green color
+                            tint = Color(0xFF4CAF50)
                         )
                     }
 
                     MovieStatus.PLANNED -> {
-                        // Movie is already in the "Planned" list
                         Icon(
                             imageVector = Icons.Filled.Bookmark,
                             contentDescription = "Already Planned",
@@ -197,7 +190,6 @@ fun SearchResultItem(
                     }
 
                     null -> {
-                        // Movie is not in the library, show the add button
                         IconButton(onClick = onAddClick) {
                             Icon(
                                 Icons.Filled.AddCircleOutline,

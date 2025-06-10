@@ -19,7 +19,7 @@ fun StarRatingInput(
     currentRating: Int,
     onRatingChange: (Int) -> Unit,
     starSize: Int = 32,
-    starColor: Color = MaterialTheme.colorScheme.primary //Color.Yellow
+    starColor: Color = MaterialTheme.colorScheme.primary
 ) {
     Row {
         for (i in 1..maxStars) {

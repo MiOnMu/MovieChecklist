@@ -20,14 +20,12 @@ class PlannedViewModel @Inject constructor(
     val plannedMovies: StateFlow<List<MovieEntity>> = repository.getPlannedMovies()
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000L), // Keep active for 5s after last collector stops
+            started = SharingStarted.WhileSubscribed(5000L),
             initialValue = emptyList()
         )
 
     fun moveToWatched(movie: MovieEntity) {
         viewModelScope.launch {
-            // The UI (e.g., MovieDetailScreen or a dialog) will handle setting the rating.
-            // Here, we just update the status.
             val updatedMovie = movie.copy(status = MovieStatus.WATCHED)
             repository.updateMovieInLibrary(updatedMovie)
         }

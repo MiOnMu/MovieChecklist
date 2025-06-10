@@ -26,14 +26,14 @@ class WatchedViewModel @Inject constructor(
 
     fun updateUserRating(movie: MovieEntity, rating: Int?) {
         viewModelScope.launch {
-            val updatedMovie = movie.copy(userRating = rating, status = MovieStatus.WATCHED) // Ensure status is correct
+            val updatedMovie = movie.copy(userRating = rating, status = MovieStatus.WATCHED)
             repository.updateMovieInLibrary(updatedMovie)
         }
     }
 
     fun moveToPlanned(movie: MovieEntity) {
         viewModelScope.launch {
-            val updatedMovie = movie.copy(status = MovieStatus.PLANNED, userRating = null) // Clear rating when moving to planned
+            val updatedMovie = movie.copy(status = MovieStatus.PLANNED, userRating = null)
             repository.updateMovieInLibrary(updatedMovie)
         }
     }

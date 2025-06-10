@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.yourpackage.moviechecklist.ui.navigation.AppNavigation
 import com.yourpackage.moviechecklist.ui.screens.common.BottomNavBar
-import com.yourpackage.moviechecklist.ui.theme.MovieChecklistTheme // Create this theme
+import com.yourpackage.moviechecklist.ui.theme.MovieChecklistTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MovieChecklistTheme { // Replace with your app's theme
+            MovieChecklistTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

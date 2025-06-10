@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yourpackage.moviechecklist.data.local.MovieEntity
 import com.yourpackage.moviechecklist.data.local.MovieStatus
-import com.yourpackage.moviechecklist.data.remote.dto.MovieDetailDto
 import com.yourpackage.moviechecklist.data.repository.MovieRepository
 import com.yourpackage.moviechecklist.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +19,7 @@ class MovieDetailViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val movieId: Int = savedStateHandle.get<Int>("movieId")!!
-    private val mediaType: String = savedStateHandle.get<String>("mediaType")!! // Get mediaType
+    private val mediaType: String = savedStateHandle.get<String>("mediaType")!!
 
     private val _movieDetails = MutableStateFlow<Resource<MovieEntity?>>(Resource.Loading())
     val movieDetails: StateFlow<Resource<MovieEntity?>> = _movieDetails.asStateFlow()
@@ -33,17 +32,11 @@ class MovieDetailViewModel @Inject constructor(
         viewModelScope.launch {
             repository.getMovieFromLibrary(movieId).collectLatest { localMovie ->
                 if (localMovie != null) {
-                    // If the movie IS in our library, emit it directly. This is correct.
                     _movieDetails.value = Resource.Success(localMovie)
-
-                    // Optional: You can still refresh details from the API if needed
-                    // without losing the user's status and rating.
                     if (localMovie.genres.isEmpty()) {
                         fetchRemoteAndMerge(localMovie.status, localMovie.userRating)
                     }
                 } else {
-                    // If the movie IS NOT in our library, fetch details from the API
-                    // but DO NOT assign a status.
                     fetchRemoteDetailsOnly()
                 }
             }
@@ -84,7 +77,7 @@ class MovieDetailViewModel @Inject constructor(
             val movieToAdd = currentMovieResource.data.copy(status = MovieStatus.PLANNED, userRating = null)
             viewModelScope.launch {
                 repository.addMovieToLibrary(movieToAdd)
-                _movieDetails.value = Resource.Success(movieToAdd) // Update UI state
+                _movieDetails.value = Resource.Success(movieToAdd)
             }
         }
     }
@@ -94,15 +87,14 @@ class MovieDetailViewModel @Inject constructor(
         if (currentMovieResource is Resource.Success && currentMovieResource.data != null) {
             val movieToUpdate = currentMovieResource.data.copy(status = MovieStatus.WATCHED, userRating = rating)
             viewModelScope.launch {
-                repository.addMovieToLibrary(movieToUpdate) // Add/Update
+                repository.addMovieToLibrary(movieToUpdate)
                 _movieDetails.value = Resource.Success(movieToUpdate)
             }
         } else if (currentMovieResource is Resource.Error && currentMovieResource.data != null) {
-            // This case might occur if we had an error but still have some partial data to save
             val movieToUpdate = currentMovieResource.data.copy(status = MovieStatus.WATCHED, userRating = rating)
             viewModelScope.launch {
-                repository.addMovieToLibrary(movieToUpdate) // Add/Update
-                _movieDetails.value = Resource.Success(movieToUpdate) // Update UI state to reflect saved data
+                repository.addMovieToLibrary(movieToUpdate)
+                _movieDetails.value = Resource.Success(movieToUpdate)
             }
         }
     }
@@ -112,13 +104,13 @@ class MovieDetailViewModel @Inject constructor(
         if (currentMovieResource is Resource.Success && currentMovieResource.data != null) {
             val movieToUpdate = currentMovieResource.data.copy(status = MovieStatus.PLANNED, userRating = null)
             viewModelScope.launch {
-                repository.addMovieToLibrary(movieToUpdate) // Add/Update
+                repository.addMovieToLibrary(movieToUpdate)
                 _movieDetails.value = Resource.Success(movieToUpdate)
             }
         } else if (currentMovieResource is Resource.Error && currentMovieResource.data != null) {
             val movieToUpdate = currentMovieResource.data.copy(status = MovieStatus.PLANNED, userRating = null)
             viewModelScope.launch {
-                repository.addMovieToLibrary(movieToUpdate) // Add/Update
+                repository.addMovieToLibrary(movieToUpdate)
                 _movieDetails.value = Resource.Success(movieToUpdate)
             }
         }
@@ -141,9 +133,6 @@ class MovieDetailViewModel @Inject constructor(
                 when (remoteResource) {
                     is Resource.Success -> {
                         remoteResource.data?.let { dto ->
-                            // Map the DTO to an Entity, but DO NOT assign a status.
-                            // We will handle the null status in the UI.
-                            // The repository's map function has a default status, so we create the entity here.
                             val transientEntity = MovieEntity(
                                 id = dto.id,
                                 title = dto.title ?: dto.name ?: "Unknown Title",
@@ -153,10 +142,7 @@ class MovieDetailViewModel @Inject constructor(
                                 releaseDate = dto.releaseDate ?: dto.firstAirDate,
                                 voteAverage = dto.voteAverage,
                                 genres = dto.genres.map { it.name },
-                                // ** THE KEY CHANGE: Status is determined by what's in the DB, so this is transient **
-                                // We will let the AddOrChangeStatusButtons handle a "null" movie status.
-                                // For this to work, the MovieEntity's status property must be nullable. Let's adjust that.
-                                status = null, // We'll make MovieEntity.status nullable
+                                status = null,
                                 userRating = null,
                                 mediaType = mediaType
                             )

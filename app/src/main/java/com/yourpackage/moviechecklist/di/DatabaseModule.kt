@@ -22,7 +22,7 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "movie_checklist_db"
-        ).fallbackToDestructiveMigration(dropAllTables = true).build() // Use migrations for production
+        ).fallbackToDestructiveMigration(dropAllTables = true).build()
     }
 
     @Provides

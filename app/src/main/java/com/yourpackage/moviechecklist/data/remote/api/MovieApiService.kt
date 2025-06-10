@@ -8,8 +8,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface MovieApiService {
-    // Search for movies and TV shows
-    @GET("search/multi") // 'multi' searches movies, tv, people. Filter client-side or use specific endpoints
+    @GET("search/multi")
     suspend fun searchMulti(
         @Query("query") query: String,
         @Query("page") page: Int = 1,
@@ -21,7 +20,7 @@ interface MovieApiService {
     suspend fun getMovieDetails(
         @Path("movie_id") movieId: Int,
         @Query("api_key") apiKey: String = BuildConfig.TMDB_API_KEY,
-        @Query("append_to_response") appendToResponse: String? = null // e.g. "videos,credits"
+        @Query("append_to_response") appendToResponse: String? = null
     ): MovieDetailDto
 
     @GET("tv/{tv_id}")
@@ -29,5 +28,5 @@ interface MovieApiService {
         @Path("tv_id") tvId: Int,
         @Query("api_key") apiKey: String = BuildConfig.TMDB_API_KEY,
         @Query("append_to_response") appendToResponse: String? = null
-    ): MovieDetailDto // Reusing MovieDetailDto, adapt if TV details differ significantly for your needs
+    ): MovieDetailDto
 }

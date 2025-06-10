@@ -7,7 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.automirrored.outlined.ListAlt // Planned icon
+import androidx.compose.material.icons.automirrored.outlined.ListAlt
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,7 +18,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -62,10 +61,6 @@ fun WatchedScreen(
                             navController.navigate(Screen.MovieDetail.createRoute(movie.id, movie.mediaType))
                         },
                         onRateClick = {
-                            // Logic to show rating dialog or navigate to detail to rate
-                            // For now, let's assume rating happens on detail screen or via a dialog here
-                            // We can pass the movie to a dialog or use the detail screen.
-                            // This example will show current rating, actual rating input on detail screen.
                             navController.navigate(Screen.MovieDetail.createRoute(movie.id, movie.mediaType))
                         },
                         onMoveToPlannedClick = {
@@ -82,7 +77,7 @@ fun WatchedScreen(
 fun WatchedMovieItem(
     movie: MovieEntity,
     onMovieClick: () -> Unit,
-    onRateClick: () -> Unit, // Or (Int) -> Unit if direct rating
+    onRateClick: () -> Unit,
     onMoveToPlannedClick: () -> Unit
 ) {
     Card(
@@ -97,9 +92,9 @@ fun WatchedMovieItem(
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(movie.posterPath?.let { Constants.TMDB_IMAGE_BASE_URL_W500 + it } ?: "")
+                    .data(movie.posterPath?.let { Constants.TMDB_IMAGE_BASE_URL + it } ?: "")
                     .crossfade(true)
-                    .error(R.drawable.ic_launcher_background) // Add a placeholder drawable
+                    .error(R.drawable.ic_launcher_background)
                     .placeholder(R.drawable.ic_launcher_background)
                     .build(),
                 contentDescription = movie.title,
@@ -143,7 +138,7 @@ fun WatchedMovieItem(
             }
             Spacer(modifier = Modifier.width(8.dp))
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                IconButton(onClick = onRateClick, modifier = Modifier.size(36.dp)) { // Click to go to detail for rating
+                IconButton(onClick = onRateClick, modifier = Modifier.size(36.dp)) {
                     Icon(Icons.Filled.Star, contentDescription = "Rate Movie", tint = MaterialTheme.colorScheme.primary)
                 }
                 IconButton(onClick = onMoveToPlannedClick, modifier = Modifier.size(36.dp)) {

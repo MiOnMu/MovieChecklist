@@ -23,7 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.yourpackage.moviechecklist.R // Ensure you have a placeholder drawable
+import com.yourpackage.moviechecklist.R
 import com.yourpackage.moviechecklist.data.local.MovieEntity
 import com.yourpackage.moviechecklist.ui.navigation.Screen
 import com.yourpackage.moviechecklist.util.Constants
@@ -82,12 +82,9 @@ fun PlannedScreen(
                             navController.navigate(Screen.MovieDetail.createRoute(movie.id, movie.mediaType))
                         },
                         onMarkAsWatchedClick = {
-                            // Navigate to detail screen to confirm and rate, or directly mark if no rating needed initially
-                            // For consistency, let's assume rating is done on detail screen or via a dialog there after status change.
-                            viewModel.moveToWatched(movie) // This changes status
-                            // Optionally, navigate to detail to prompt for rating or show confirmation
+                            viewModel.moveToWatched(movie)
                             navController.navigate(Screen.MovieDetail.createRoute(movie.id, movie.mediaType)) {
-                                launchSingleTop = true // Avoid multiple detail screens if already there
+                                launchSingleTop = true
                             }
                         },
                         onRemoveClick = {
@@ -116,26 +113,26 @@ fun PlannedMovieItem(
     ) {
         Row(
             modifier = Modifier.padding(10.dp),
-            verticalAlignment = Alignment.Top // Align items to the top for better text flow control
+            verticalAlignment = Alignment.Top
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(movie.posterPath?.let { Constants.TMDB_IMAGE_BASE_URL_W500 + it } ?: "")
+                    .data(movie.posterPath?.let { Constants.TMDB_IMAGE_BASE_URL + it } ?: "")
                     .crossfade(true)
-                    .error(R.drawable.ic_launcher_background) // Replace with your placeholder
-                    .placeholder(R.drawable.ic_launcher_background) // Replace with your placeholder
+                    .error(R.drawable.ic_launcher_background)
+                    .placeholder(R.drawable.ic_launcher_background)
                     .build(),
                 contentDescription = movie.title,
                 modifier = Modifier
                     .width(90.dp)
-                    .height(135.dp) // Slightly larger for better visual
-                    .aspectRatio(2f / 3f), // Maintain movie poster aspect ratio
+                    .height(135.dp)
+                    .aspectRatio(2f / 3f),
                 contentScale = ContentScale.Crop
             )
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            Column(modifier = Modifier.weight(1f)) { // Takes remaining space
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     movie.title,
                     style = MaterialTheme.typography.titleMedium,
@@ -163,12 +160,12 @@ fun PlannedMovieItem(
                 )
             }
 
-            Spacer(modifier = Modifier.width(8.dp)) // Space before action buttons
+            Spacer(modifier = Modifier.width(8.dp))
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween, // Distribute buttons vertically
-                modifier = Modifier.height(135.dp) // Match image height
+                verticalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.height(135.dp)
             ) {
                 IconButton(
                     onClick = onMarkAsWatchedClick,

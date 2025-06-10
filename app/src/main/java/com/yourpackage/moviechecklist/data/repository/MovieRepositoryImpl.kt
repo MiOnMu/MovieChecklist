@@ -5,7 +5,7 @@ import com.yourpackage.moviechecklist.data.local.MovieEntity
 import com.yourpackage.moviechecklist.data.local.MovieStatus
 import com.yourpackage.moviechecklist.data.remote.api.MovieApiService
 import com.yourpackage.moviechecklist.data.remote.dto.MovieDetailDto
-import com.yourpackage.moviechecklist.data.remote.dto.MovieResultDto as ApiMovieResultDto // Alias to avoid name clash
+import com.yourpackage.moviechecklist.data.remote.dto.MovieResultDto as ApiMovieResultDto
 import com.yourpackage.moviechecklist.data.remote.dto.SearchResponseDto
 import com.yourpackage.moviechecklist.util.Resource
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +22,6 @@ class MovieRepositoryImpl @Inject constructor(
     private val movieApiService: MovieApiService
 ) : MovieRepository {
 
-    // --- Local DB Operations ---
     override suspend fun addMovieToLibrary(movie: MovieEntity) {
         movieDao.insertMovie(movie)
     }
@@ -42,12 +41,10 @@ class MovieRepositoryImpl @Inject constructor(
     override fun getPlannedMovies(): Flow<List<MovieEntity>> = movieDao.getMoviesByStatus(MovieStatus.PLANNED)
 
     override fun searchLocalMovies(query: String, statusFilter: MovieStatus?, typeFilter: String?): Flow<List<MovieEntity>> {
-        // Implement more sophisticated local filtering logic here if needed
         return if (query.isBlank() && statusFilter == null && typeFilter == null) {
             movieDao.getAllMovies()
         } else if (statusFilter != null) {
-            // This example is simplified. You'd need more complex queries or client-side filtering.
-            movieDao.getMoviesByStatus(statusFilter) // Needs adjustment for query & type
+            movieDao.getMoviesByStatus(statusFilter)
         }
         else {
             movieDao.searchLocalMovies(query) // Basic title search
@@ -55,12 +52,11 @@ class MovieRepositoryImpl @Inject constructor(
     }
 
 
-    // --- Remote API Operations ---
+
     override suspend fun searchRemoteMovies(query: String, page: Int): Flow<Resource<SearchResponseDto>> = flow {
         emit(Resource.Loading())
         try {
             val response = movieApiService.searchMulti(query = query, page = page)
-            // Filter out results that aren't movies or TV shows if 'multi' returns persons etc.
             val filteredResults = response.results.filter { it.mediaType == "movie" || it.mediaType == "tv" }
             emit(Resource.Success(response.copy(results = filteredResults)))
         } catch (e: HttpException) {
@@ -86,7 +82,6 @@ class MovieRepositoryImpl @Inject constructor(
         }
     }
 
-    // --- Mappers ---
     override fun mapMovieDetailDtoToEntity(dto: MovieDetailDto, mediaTypeFromSearch: String): MovieEntity {
         return MovieEntity(
             id = dto.id,
@@ -97,14 +92,13 @@ class MovieRepositoryImpl @Inject constructor(
             releaseDate = dto.releaseDate ?: dto.firstAirDate,
             voteAverage = dto.voteAverage,
             genres = dto.genres.map { it.name },
-            status = null, // Default to null, ViewModel will set it
+            status = null,
             userRating = null,
             mediaType = mediaTypeFromSearch
         )
     }
 
     override fun mapMovieResultDtoToEntity(dto: ApiMovieResultDto, status: MovieStatus): MovieEntity {
-        // mediaType might be null from some TMDB responses, ensure it's set.
         val effectiveMediaType = dto.mediaType ?: if (dto.title != null) "movie" else "tv"
         return MovieEntity(
             id = dto.id,
@@ -114,7 +108,7 @@ class MovieRepositoryImpl @Inject constructor(
             backdropPath = dto.backdropPath,
             releaseDate = dto.releaseDate ?: dto.firstAirDate,
             voteAverage = dto.voteAverage,
-            genres = emptyList(), // Genre IDs are provided, full names need another call or a predefined map
+            genres = emptyList(),
             status = status,
             userRating = null,
             mediaType = effectiveMediaType

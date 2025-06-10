@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -25,6 +26,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.yourpackage.moviechecklist.R // Ensure you have a placeholder drawable
 import com.yourpackage.moviechecklist.data.remote.dto.MovieResultDto
+import com.yourpackage.moviechecklist.data.local.MovieStatus
 import com.yourpackage.moviechecklist.ui.navigation.Screen
 import com.yourpackage.moviechecklist.util.Constants
 import com.yourpackage.moviechecklist.util.Resource
@@ -38,8 +40,7 @@ fun SearchScreen(
     val searchQuery by viewModel.searchQuery
     val searchResults by viewModel.searchResults.collectAsState()
     val keyboardController = LocalSoftwareKeyboardController.current
-
-    // Filter states
+    val libraryMoviesMap by viewModel.libraryMoviesMap.collectAsState()
     val mediaTypeFilter by viewModel.mediaTypeFilter
 
 
@@ -104,8 +105,10 @@ fun SearchScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(movies, key = { it.id }) { movie ->
+                                val movieStatus = libraryMoviesMap[movie.id]
                                 SearchResultItem(
                                     movie = movie,
+                                    movieStatus = movieStatus,
                                     onItemClick = {
                                         // Check if movie is already in local DB, then navigate
                                         // For now, directly navigate to detail to add or view
@@ -137,6 +140,7 @@ fun SearchScreen(
 @Composable
 fun SearchResultItem(
     movie: MovieResultDto,
+    movieStatus: MovieStatus?,
     onItemClick: () -> Unit,
     onAddClick: () -> Unit
 ) {
@@ -169,8 +173,40 @@ fun SearchResultItem(
                     style = MaterialTheme.typography.bodySmall
                 )
             }
-            IconButton(onClick = onAddClick) {
-                Icon(Icons.Filled.AddCircleOutline, contentDescription = "Add to Planned")
+            Box(
+                modifier = Modifier.size(48.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                when (movieStatus) {
+                    MovieStatus.WATCHED -> {
+                        // Movie is already marked as Watched
+                        Icon(
+                            imageVector = Icons.Filled.CheckCircle,
+                            contentDescription = "Already Watched",
+                            tint = Color(0xFF4CAF50) // A nice green color
+                        )
+                    }
+
+                    MovieStatus.PLANNED -> {
+                        // Movie is already in the "Planned" list
+                        Icon(
+                            imageVector = Icons.Filled.Bookmark,
+                            contentDescription = "Already Planned",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    null -> {
+                        // Movie is not in the library, show the add button
+                        IconButton(onClick = onAddClick) {
+                            Icon(
+                                Icons.Filled.AddCircleOutline,
+                                contentDescription = "Add to Planned",
+                                modifier = Modifier.size(28.dp)
+                            )
+                        }
+                    }
+                }
             }
         }
     }

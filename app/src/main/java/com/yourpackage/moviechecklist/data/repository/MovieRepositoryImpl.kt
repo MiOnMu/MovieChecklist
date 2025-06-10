@@ -10,6 +10,7 @@ import com.yourpackage.moviechecklist.data.remote.dto.SearchResponseDto
 import com.yourpackage.moviechecklist.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
@@ -86,7 +87,7 @@ class MovieRepositoryImpl @Inject constructor(
     }
 
     // --- Mappers ---
-    override fun mapMovieDetailDtoToEntity(dto: MovieDetailDto, mediaTypeFromSearch: String, status: MovieStatus): MovieEntity {
+    override fun mapMovieDetailDtoToEntity(dto: MovieDetailDto, mediaTypeFromSearch: String): MovieEntity {
         return MovieEntity(
             id = dto.id,
             title = dto.title ?: dto.name ?: "Unknown Title",
@@ -96,9 +97,9 @@ class MovieRepositoryImpl @Inject constructor(
             releaseDate = dto.releaseDate ?: dto.firstAirDate,
             voteAverage = dto.voteAverage,
             genres = dto.genres.map { it.name },
-            status = status,
-            userRating = null, // Set later by user
-            mediaType = mediaTypeFromSearch // Use the mediaType from search or determined context
+            status = null, // Default to null, ViewModel will set it
+            userRating = null,
+            mediaType = mediaTypeFromSearch
         )
     }
 
@@ -118,5 +119,11 @@ class MovieRepositoryImpl @Inject constructor(
             userRating = null,
             mediaType = effectiveMediaType
         )
+    }
+
+    override fun getLibraryMoviesMap(): Flow<Map<Int, MovieStatus?>> {
+        return movieDao.getAllMovies().map { movieList ->
+            movieList.associateBy({ movie: MovieEntity -> movie.id }, { movie: MovieEntity -> movie.status })
+        }
     }
 }

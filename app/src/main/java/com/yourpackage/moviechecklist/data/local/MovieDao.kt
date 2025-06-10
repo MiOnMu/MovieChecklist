@@ -20,10 +20,10 @@ interface MovieDao {
     @Query("SELECT * FROM movies WHERE status = :status ORDER BY title ASC")
     fun getMoviesByStatus(status: MovieStatus): Flow<List<MovieEntity>>
 
-    @Query("SELECT * FROM movies WHERE title LIKE '%' || :query || '%'") // Simple local title search
+    @Query("SELECT * FROM movies WHERE title LIKE '%' || :query || '%'")
     fun searchLocalMovies(query: String): Flow<List<MovieEntity>>
 
     @Query("SELECT * FROM movies")
-    fun getAllMovies(): Flow<List<MovieEntity>> // For simple local filtering
+    fun getAllMovies(): Flow<List<MovieEntity>>
 
 }

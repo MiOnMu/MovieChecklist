@@ -3,7 +3,6 @@ package com.yourpackage.moviechecklist.ui.screens.search
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yourpackage.moviechecklist.data.local.MovieEntity
 import com.yourpackage.moviechecklist.data.local.MovieStatus
 import com.yourpackage.moviechecklist.data.remote.dto.MovieResultDto
 import com.yourpackage.moviechecklist.data.remote.dto.SearchResponseDto
@@ -24,10 +23,9 @@ class SearchViewModel @Inject constructor(
     private val _searchQuery = mutableStateOf("")
     val searchQuery = _searchQuery
 
-    // Remote search results
     private val _searchResults = MutableStateFlow<Resource<SearchResponseDto>>(
         Resource.Success(
-            SearchResponseDto( // Provide a default empty SearchResponseDto
+            SearchResponseDto(
                 page = 0,
                 results = emptyList(),
                 totalPages = 0,
@@ -37,24 +35,22 @@ class SearchViewModel @Inject constructor(
     )
     val searchResults: StateFlow<Resource<SearchResponseDto>> = _searchResults.asStateFlow()
 
-    // Filter states - add more as needed
-    val mediaTypeFilter = mutableStateOf<String?>(null) // "movie", "tv", or null for all
+    val mediaTypeFilter = mutableStateOf<String?>(null)
 
 
     private var searchJob: Job? = null
 
     fun onSearchQueryChanged(query: String) {
         _searchQuery.value = query
-        searchJob?.cancel() // Cancel previous job
-        if (query.length > 2) { // Start search after 3 characters
+        searchJob?.cancel()
+        if (query.length > 2) {
             searchJob = viewModelScope.launch {
-                delay(500L) // Debounce
+                delay(500L)
                 performRemoteSearch(query)
-                // performLocalSearch(query) // If you want local search too
             }
         } else {
             _searchResults.value = Resource.Success(
-                SearchResponseDto( // Clear to a default empty SearchResponseDto
+                SearchResponseDto(
                     page = 0,
                     results = emptyList(),
                     totalPages = 0,
@@ -67,13 +63,12 @@ class SearchViewModel @Inject constructor(
     private fun performRemoteSearch(query: String) {
         viewModelScope.launch {
             repository.searchRemoteMovies(query, 1).collect { result ->
-                // Apply client-side filtering for mediaType if needed, or modify API call
                 if (result is Resource.Success && result.data != null) {
                     val filteredResults = result.data.results.filter {
                         mediaTypeFilter.value == null || it.mediaType.equals(mediaTypeFilter.value, ignoreCase = true)
                     }
                     _searchResults.value = Resource.Success(result.data.copy(results = filteredResults))
-                } else if (result is Resource.Error) { // Handle other states explicitly
+                } else if (result is Resource.Error) {
                     _searchResults.value = Resource.Error(result.message ?: "Unknown error", code = result.code)
                 } else if (result is Resource.Loading) {
                     _searchResults.value = Resource.Loading()
@@ -85,12 +80,8 @@ class SearchViewModel @Inject constructor(
 
     fun addMovieToPlanned(apiMovie: MovieResultDto) {
         viewModelScope.launch {
-            // Fetch full details if needed to get genre names, etc., or use basic info
-            // For simplicity, using basic info from search result directly
             val movieEntity = repository.mapMovieResultDtoToEntity(apiMovie, MovieStatus.PLANNED)
             repository.addMovieToLibrary(movieEntity)
-            // Optionally, fetch full details in background and update
-            // This provides immediate feedback
             fetchAndStoreFullDetails(movieEntity.id, movieEntity.mediaType)
         }
     }
@@ -103,11 +94,11 @@ class SearchViewModel @Inject constructor(
                     val detailedEntity = mappedEntity.copy(status = MovieStatus.PLANNED)
                     val existing = repository.getMovieFromLibrary(detailedEntity.id).firstOrNull()
                     val entityToSave = if (existing != null) {
-                        detailedEntity.copy(userRating = existing.userRating, status = existing.status) // Preserve user data
+                        detailedEntity.copy(userRating = existing.userRating, status = existing.status)
                     } else {
                         detailedEntity
                     }
-                    repository.addMovieToLibrary(entityToSave) // This will replace due to OnConflictStrategy.REPLACE
+                    repository.addMovieToLibrary(entityToSave)
                 }
             }
         }
@@ -115,10 +106,8 @@ class SearchViewModel @Inject constructor(
 
     fun setMediaTypeFilter(type: String?) {
         mediaTypeFilter.value = type
-        // Re-trigger search if query is not empty
         if (_searchQuery.value.length > 2) {
             performRemoteSearch(_searchQuery.value)
-            // performLocalSearch(_searchQuery.value)
         }
     }
 

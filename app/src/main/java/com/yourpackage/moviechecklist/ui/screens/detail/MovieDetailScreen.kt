@@ -7,17 +7,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
-import androidx.compose.material.icons.filled.PlaylistAdd
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -32,8 +29,8 @@ import com.yourpackage.moviechecklist.ui.screens.common.StarRatingInput
 @Composable
 fun MovieDetailScreen(
     navController: NavController,
-    movieId: Int, // Passed via navigation
-    mediaType: String, // Passed via navigation
+    movieId: Int,
+    mediaType: String,
     viewModel: MovieDetailViewModel = hiltViewModel()
 ) {
     val movieDetailsResource by viewModel.movieDetails.collectAsState()
@@ -67,7 +64,7 @@ fun MovieDetailScreen(
                 Box(modifier = Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text("Error: ${resource.message}", color = MaterialTheme.colorScheme.error)
-                        resource.data?.let { movie -> // Show partial data if available
+                        resource.data?.let { movie ->
                             Spacer(modifier = Modifier.height(8.dp))
                             Text("Partial data for: ${movie.title}", style = MaterialTheme.typography.titleMedium)
                             Spacer(modifier = Modifier.height(16.dp))
@@ -93,7 +90,7 @@ fun MovieDetailScreen(
                 ) {
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data(movie.backdropPath?.let { Constants.TMDB_IMAGE_BASE_URL_W500 + it } ?: movie.posterPath?.let { Constants.TMDB_IMAGE_BASE_URL_W500 + it })
+                            .data(movie.backdropPath?.let { Constants.TMDB_IMAGE_BASE_URL + it } ?: movie.posterPath?.let { Constants.TMDB_IMAGE_BASE_URL + it })
                             .crossfade(true)
                             .placeholder(R.drawable.ic_launcher_background)
                             .error(R.drawable.ic_launcher_background)
@@ -126,9 +123,7 @@ fun MovieDetailScreen(
                         Text(movie.overview, style = MaterialTheme.typography.bodyMedium)
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // Status and Rating Section
                         Text(
-                            // Use the elvis operator (?:) to provide a default value for null
                             text = movie.status?.name?.replaceFirstChar { it.uppercase() } ?: "Not in Library",
                             style = MaterialTheme.typography.bodyLarge
                         )
@@ -148,7 +143,7 @@ fun MovieDetailScreen(
                     }
                 }
 
-                if (showRatingDialog && movie.status == MovieStatus.PLANNED) { // Only show for planned when moving to watched
+                if (showRatingDialog && movie.status == MovieStatus.PLANNED) {
                     RatingPromptDialog(
                         onDismiss = { showRatingDialog = false },
                         onConfirm = { rating ->
@@ -165,7 +160,6 @@ fun MovieDetailScreen(
 @Composable
 fun AddOrChangeStatusButtons(movie: MovieEntity, viewModel: MovieDetailViewModel, onShowRatingDialog: () -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-        // THIS 'when' STATEMENT IS NOW KEY
         when (movie.status) {
             MovieStatus.PLANNED -> {
                 Button(onClick = { onShowRatingDialog() }) {
@@ -199,9 +193,9 @@ fun AddOrChangeStatusButtons(movie: MovieEntity, viewModel: MovieDetailViewModel
 @Composable
 fun RatingPromptDialog(
     onDismiss: () -> Unit,
-    onConfirm: (Int?) -> Unit // Rating can be optional if user skips
+    onConfirm: (Int?) -> Unit
 ) {
-    var currentRating by remember { mutableIntStateOf(0) } // Initial rating for the dialog
+    var currentRating by remember { mutableIntStateOf(0) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -223,7 +217,7 @@ fun RatingPromptDialog(
         },
         dismissButton = {
             TextButton(onClick = {
-                onConfirm(null) // User chose to skip rating
+                onConfirm(null)
                 onDismiss()
             }) {
                 Text("Skip Rating")

@@ -99,8 +99,8 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             repository.getRemoteMovieDetails(movieId, mediaType).collect { resource ->
                 if (resource is Resource.Success && resource.data != null) {
-                    val detailedEntity = repository.mapMovieDetailDtoToEntity(resource.data, mediaType, MovieStatus.PLANNED)
-                    // Check if it's already in DB and merge if necessary, or just replace
+                    val mappedEntity = repository.mapMovieDetailDtoToEntity(resource.data, mediaType)
+                    val detailedEntity = mappedEntity.copy(status = MovieStatus.PLANNED)
                     val existing = repository.getMovieFromLibrary(detailedEntity.id).firstOrNull()
                     val entityToSave = if (existing != null) {
                         detailedEntity.copy(userRating = existing.userRating, status = existing.status) // Preserve user data
@@ -109,7 +109,6 @@ class SearchViewModel @Inject constructor(
                     }
                     repository.addMovieToLibrary(entityToSave) // This will replace due to OnConflictStrategy.REPLACE
                 }
-                // Handle error case if needed (e.g. log it)
             }
         }
     }
@@ -122,4 +121,11 @@ class SearchViewModel @Inject constructor(
             // performLocalSearch(_searchQuery.value)
         }
     }
+
+    val libraryMoviesMap: StateFlow<Map<Int, MovieStatus?>> = repository.getLibraryMoviesMap()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyMap()
+        )
 }

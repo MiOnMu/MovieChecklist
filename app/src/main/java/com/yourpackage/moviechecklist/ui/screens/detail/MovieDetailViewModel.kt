@@ -31,33 +31,36 @@ class MovieDetailViewModel @Inject constructor(
 
     private fun loadMovieDetails() {
         viewModelScope.launch {
-            // 1. Try to get from local DB first
             repository.getMovieFromLibrary(movieId).collectLatest { localMovie ->
                 if (localMovie != null) {
+                    // If the movie IS in our library, emit it directly. This is correct.
                     _movieDetails.value = Resource.Success(localMovie)
-                    // Optionally, refresh from remote if data is stale or incomplete
-                    if (localMovie.genres.isEmpty()) { // Example: if genres are missing, fetch full remote
+
+                    // Optional: You can still refresh details from the API if needed
+                    // without losing the user's status and rating.
+                    if (localMovie.genres.isEmpty()) {
                         fetchRemoteAndMerge(localMovie.status, localMovie.userRating)
                     }
                 } else {
-                    // 2. If not in local DB, fetch from remote and prepare to add
-                    fetchRemoteAndMerge(MovieStatus.PLANNED, null) // Default to PLANNED if fetched fresh
+                    // If the movie IS NOT in our library, fetch details from the API
+                    // but DO NOT assign a status.
+                    fetchRemoteDetailsOnly()
                 }
             }
         }
     }
 
-    private fun fetchRemoteAndMerge(initialStatus: MovieStatus, initialUserRating: Int?) {
+    private fun fetchRemoteAndMerge(initialStatus: MovieStatus?, initialUserRating: Int?) {
         viewModelScope.launch {
             repository.getRemoteMovieDetails(movieId, mediaType).collect { remoteResource ->
                 when (remoteResource) {
                     is Resource.Success -> {
                         remoteResource.data?.let { dto ->
-                            val entity = repository.mapMovieDetailDtoToEntity(dto, mediaType, initialStatus)
-                            val finalEntity = entity.copy(userRating = initialUserRating) // Preserve rating if existed
-                            // Don't automatically add to library here, let user action do that from UI
-                            // unless it's being viewed for the first time after adding from search.
-                            // The logic here is to *display* details. Adding happens via specific actions.
+                            val entity = repository.mapMovieDetailDtoToEntity(dto, mediaType)
+                            val finalEntity = entity.copy(
+                                status = initialStatus,
+                                userRating = initialUserRating
+                            )
                             _movieDetails.value = Resource.Success(finalEntity)
                         } ?: run {
                             _movieDetails.value = Resource.Error("Movie details not found (DTO null).", null)
@@ -128,6 +131,47 @@ class MovieDetailViewModel @Inject constructor(
             viewModelScope.launch {
                 repository.updateMovieInLibrary(movieToUpdate)
                 _movieDetails.value = Resource.Success(movieToUpdate)
+            }
+        }
+    }
+
+    private fun fetchRemoteDetailsOnly() {
+        viewModelScope.launch {
+            repository.getRemoteMovieDetails(movieId, mediaType).collect { remoteResource ->
+                when (remoteResource) {
+                    is Resource.Success -> {
+                        remoteResource.data?.let { dto ->
+                            // Map the DTO to an Entity, but DO NOT assign a status.
+                            // We will handle the null status in the UI.
+                            // The repository's map function has a default status, so we create the entity here.
+                            val transientEntity = MovieEntity(
+                                id = dto.id,
+                                title = dto.title ?: dto.name ?: "Unknown Title",
+                                overview = dto.overview,
+                                posterPath = dto.posterPath,
+                                backdropPath = dto.backdropPath,
+                                releaseDate = dto.releaseDate ?: dto.firstAirDate,
+                                voteAverage = dto.voteAverage,
+                                genres = dto.genres.map { it.name },
+                                // ** THE KEY CHANGE: Status is determined by what's in the DB, so this is transient **
+                                // We will let the AddOrChangeStatusButtons handle a "null" movie status.
+                                // For this to work, the MovieEntity's status property must be nullable. Let's adjust that.
+                                status = null, // We'll make MovieEntity.status nullable
+                                userRating = null,
+                                mediaType = mediaType
+                            )
+                            _movieDetails.value = Resource.Success(transientEntity)
+                        } ?: run {
+                            _movieDetails.value = Resource.Error("Movie details not found.", null)
+                        }
+                    }
+                    is Resource.Error -> {
+                        _movieDetails.value = Resource.Error(remoteResource.message ?: "Unknown error.", null)
+                    }
+                    is Resource.Loading -> {
+                        _movieDetails.value = Resource.Loading()
+                    }
+                }
             }
         }
     }

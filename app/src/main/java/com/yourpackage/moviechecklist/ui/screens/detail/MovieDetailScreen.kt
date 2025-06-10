@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
+import androidx.compose.material.icons.filled.PlaylistAdd
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -126,9 +127,11 @@ fun MovieDetailScreen(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         // Status and Rating Section
-                        Text("Your Status:", style = MaterialTheme.typography.titleMedium)
-                        Text(movie.status.name.replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.bodyLarge)
-
+                        Text(
+                            // Use the elvis operator (?:) to provide a default value for null
+                            text = movie.status?.name?.replaceFirstChar { it.uppercase() } ?: "Not in Library",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
                         if (movie.status == MovieStatus.WATCHED) {
                             Spacer(modifier = Modifier.height(8.dp))
                             Text("Your Rating:", style = MaterialTheme.typography.titleMedium)
@@ -162,26 +165,31 @@ fun MovieDetailScreen(
 @Composable
 fun AddOrChangeStatusButtons(movie: MovieEntity, viewModel: MovieDetailViewModel, onShowRatingDialog: () -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-        if (movie.status == MovieStatus.PLANNED) {
-            Button(onClick = { onShowRatingDialog() }) { // Show dialog before marking as watched
-                Icon(Icons.Filled.CheckCircle, contentDescription = "Watched Icon")
-                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text("Mark as Watched & Rate")
+        // THIS 'when' STATEMENT IS NOW KEY
+        when (movie.status) {
+            MovieStatus.PLANNED -> {
+                Button(onClick = { onShowRatingDialog() }) {
+                    Icon(Icons.Filled.CheckCircle, contentDescription = "Watched Icon")
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    Text("Mark as Watched & Rate")
+                }
             }
-        } else if (movie.status == MovieStatus.WATCHED) {
-            Button(
-                onClick = { viewModel.markAsPlanned() },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
-            ) {
-                Icon(Icons.AutoMirrored.Filled.PlaylistAdd, contentDescription = "Planned Icon")
-                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text("Move to Planned")
+            MovieStatus.WATCHED -> {
+                Button(
+                    onClick = { viewModel.markAsPlanned() },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.PlaylistAdd, contentDescription = "Planned Icon")
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    Text("Move to Planned")
+                }
             }
-        } else { // If not in library (e.g. viewing from fresh search result)
-            Button(onClick = { viewModel.addCurrentMovieToPlanned() }) {
-                Icon(Icons.Filled.Add, contentDescription = "Add Icon")
-                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text("Add to Planned List")
+            null -> {
+                Button(onClick = { viewModel.addCurrentMovieToPlanned() }) {
+                    Icon(Icons.Filled.Add, contentDescription = "Add Icon")
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    Text("Add to Planned List")
+                }
             }
         }
     }

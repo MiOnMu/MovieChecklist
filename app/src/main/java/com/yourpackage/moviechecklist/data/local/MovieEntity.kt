@@ -13,7 +13,7 @@ data class MovieEntity(
     val releaseDate: String?, // Or Date type with TypeConverter
     val voteAverage: Double?, // TMDB rating
     val genres: List<String>, // Store as JSON string or use relation
-    var status: MovieStatus,
+    var status: MovieStatus?,
     var userRating: Int? = null, // User's own rating (e.g., 1-5 stars)
     val mediaType: String // "movie" or "tv"
 )

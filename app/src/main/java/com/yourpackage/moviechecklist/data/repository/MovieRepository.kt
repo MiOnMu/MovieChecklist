@@ -16,6 +16,7 @@ interface MovieRepository {
     fun getWatchedMovies(): Flow<List<MovieEntity>>
     fun getPlannedMovies(): Flow<List<MovieEntity>>
     fun searchLocalMovies(query: String, statusFilter: MovieStatus? = null, typeFilter: String? = null): Flow<List<MovieEntity>>
+    fun getLibraryMoviesMap(): Flow<Map<Int, MovieStatus?>>
 
 
     // Remote API Operations
@@ -23,6 +24,6 @@ interface MovieRepository {
     suspend fun getRemoteMovieDetails(movieId: Int, mediaType: String): Flow<Resource<MovieDetailDto>>
 
     // Helper to map DTO to Entity (consider moving to a mapper class)
-    fun mapMovieDetailDtoToEntity(dto: MovieDetailDto, mediaTypeFromSearch: String, status: MovieStatus = MovieStatus.PLANNED): MovieEntity
+    fun mapMovieDetailDtoToEntity(dto: MovieDetailDto, mediaTypeFromSearch: String): MovieEntity
     fun mapMovieResultDtoToEntity(dto: com.yourpackage.moviechecklist.data.remote.dto.MovieResultDto, status: MovieStatus = MovieStatus.PLANNED): MovieEntity
 }

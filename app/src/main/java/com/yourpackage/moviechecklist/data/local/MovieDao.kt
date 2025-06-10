@@ -25,4 +25,5 @@ interface MovieDao {
 
     @Query("SELECT * FROM movies")
     fun getAllMovies(): Flow<List<MovieEntity>> // For simple local filtering
+
 }

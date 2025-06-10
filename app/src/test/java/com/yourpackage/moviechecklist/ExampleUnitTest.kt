@@ -1,4 +1,4 @@
-package com.example.moviechecklist
+package com.yourpackage.moviechecklist
 
 import org.junit.Test
 

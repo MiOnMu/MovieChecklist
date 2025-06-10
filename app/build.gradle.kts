@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.yourpackage.moviechecklist"
+    namespace = "com.project.moviechecklist"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.yourpackage.moviechecklist"
+        applicationId = "com.project.moviechecklist"
         minSdk = 26
         targetSdk = 35
         versionCode = 1

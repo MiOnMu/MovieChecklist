@@ -34,11 +34,11 @@ fun AppNavigation(navController: NavHostController, paddingValues: PaddingValues
             route = Screen.MovieDetail.route,
             arguments = listOf(
                 navArgument("movieId") { type = NavType.IntType },
-                navArgument("mediaType") { type = NavType.StringType } // Added mediaType
+                navArgument("mediaType") { type = NavType.StringType }
             )
         ) { backStackEntry ->
             val movieId = backStackEntry.arguments?.getInt("movieId") ?: 0
-            val mediaType = backStackEntry.arguments?.getString("mediaType") ?: "movie" // default if somehow null
+            val mediaType = backStackEntry.arguments?.getString("mediaType") ?: "movie"
             MovieDetailScreen(
                 navController = navController,
                 movieId = movieId,

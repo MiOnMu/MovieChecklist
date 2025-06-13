@@ -154,7 +154,7 @@ fun PlannedMovieItem(
                 Text(
                     movie.overview,
                     style = MaterialTheme.typography.bodySmall,
-                    maxLines = 3, // Allow more lines for overview
+                    maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

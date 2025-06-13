@@ -4,7 +4,7 @@ sealed class Screen(val route: String) {
     object Watched : Screen("watched_screen")
     object Planned : Screen("planned_screen")
     object Search : Screen("search_screen")
-    object MovieDetail : Screen("movie_detail_screen/{movieId}/{mediaType}") { // Added mediaType
+    object MovieDetail : Screen("movie_detail_screen/{movieId}/{mediaType}") {
         fun createRoute(movieId: Int, mediaType: String) = "movie_detail_screen/$movieId/$mediaType"
     }
 }

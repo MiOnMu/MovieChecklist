@@ -47,7 +47,7 @@ class MovieRepositoryImpl @Inject constructor(
             movieDao.getMoviesByStatus(statusFilter)
         }
         else {
-            movieDao.searchLocalMovies(query) // Basic title search
+            movieDao.searchLocalMovies(query)
         }
     }
 

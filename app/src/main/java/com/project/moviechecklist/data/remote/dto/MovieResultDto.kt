@@ -39,7 +39,7 @@ data class MovieDetailDto(
     @SerializedName("first_air_date") val firstAirDate: String?,
     @SerializedName("vote_average") val voteAverage: Double,
     val genres: List<GenreDto>,
-    val runtime: Int?, // For movies
+    val runtime: Int?,
     @SerializedName("episode_run_time") val episodeRunTime: List<Int>?,
     val status: String
 )

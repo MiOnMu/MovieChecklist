@@ -72,7 +72,6 @@ fun SearchScreen(
                 })
             )
 
-            // Filters
             Row(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly,
@@ -84,7 +83,6 @@ fun SearchScreen(
             }
 
 
-            // Results
             when (val resource = searchResults) {
                 is Resource.Loading -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

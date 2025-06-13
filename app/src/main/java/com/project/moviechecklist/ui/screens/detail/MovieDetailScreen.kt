@@ -211,7 +211,7 @@ fun RatingPromptDialog(
             }
         },
         confirmButton = {
-            Button(onClick = { onConfirm(if (currentRating == 0) null else currentRating) }) { // Pass null if not rated
+            Button(onClick = { onConfirm(if (currentRating == 0) null else currentRating) }) {
                 Text("Confirm")
             }
         },

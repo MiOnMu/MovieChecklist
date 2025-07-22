@@ -1,10 +1,10 @@
-# 🎥 MovieChecklist
+# MovieChecklist
 
 An Android app for tracking the movies you want to watch — and checking them off once you do! Built with Kotlin, modern Android architecture, and a sleek Material design.
 
 ---
 
-## 📚 Table of Contents
+## Table of Contents
 
 - [Features](#features)
 - [Tech Stack](#tech-stack)
@@ -15,7 +15,7 @@ An Android app for tracking the movies you want to watch — and checking them o
 
 ---
 
-## ✅ Features
+## Features
 
 - Add movies to your watchlist
 - Mark movies as watched/unwatched
@@ -28,7 +28,7 @@ An Android app for tracking the movies you want to watch — and checking them o
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 - **Language:** Kotlin
 - **UI:** Jetpack Compose / Android XML Views
@@ -40,7 +40,7 @@ An Android app for tracking the movies you want to watch — and checking them o
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -56,11 +56,11 @@ An Android app for tracking the movies you want to watch — and checking them o
 
 2. Open the project in **Android Studio**
 
-3. Let Gradle sync and then click **Run** ▶️
+3. Let Gradle sync and then click **Run** 
 
 ---
 
-## 📱 Usage
+## Usage
 
 * Tap **➕ Add** to enter a new movie
 * Tap the **checkbox** or **swipe** to mark as watched
@@ -70,9 +70,4 @@ An Android app for tracking the movies you want to watch — and checking them o
 
 ---
 
-*Enjoy organizing your movie nights! 🍿*
-
-```
-
-Let me know if you want to generate badges, add a screenshot section, or link to Play Store/Test builds!
-```
+*Enjoy organizing your movie nights!*

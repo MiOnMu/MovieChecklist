@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.project.moviechecklist.data.local.MovieEntity
 import com.project.moviechecklist.data.local.MovieStatus
 import com.project.moviechecklist.data.repository.MovieRepository
+import com.project.moviechecklist.util.ConnectivityObserver
 import com.project.moviechecklist.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -15,6 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MovieDetailViewModel @Inject constructor(
     private val repository: MovieRepository,
+    private val connectivityObserver: ConnectivityObserver,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -23,6 +25,13 @@ class MovieDetailViewModel @Inject constructor(
 
     private val _movieDetails = MutableStateFlow<Resource<MovieEntity?>>(Resource.Loading())
     val movieDetails: StateFlow<Resource<MovieEntity?>> = _movieDetails.asStateFlow()
+
+    val isWifiConnected: StateFlow<Boolean> = connectivityObserver.observeWifiStatus()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = connectivityObserver.isWifiConnected()
+        )
 
     init {
         loadMovieDetails()

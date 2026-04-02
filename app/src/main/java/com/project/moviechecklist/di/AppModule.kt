@@ -1,20 +1,22 @@
 package com.project.moviechecklist.di
 
-import com.project.moviechecklist.data.repository.MovieRepository
-import com.project.moviechecklist.data.repository.MovieRepositoryImpl
-import dagger.Binds
+import android.content.Context
+import com.project.moviechecklist.util.ConnectivityObserver
+import com.project.moviechecklist.util.NetworkConnectivityObserver
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class AppModule {
+object AppModule {
 
-    @Binds
+    @Provides
     @Singleton
-    abstract fun bindMovieRepository(
-        movieRepositoryImpl: MovieRepositoryImpl
-    ): MovieRepository
+    fun provideConnectivityObserver(@ApplicationContext context: Context): ConnectivityObserver {
+        return NetworkConnectivityObserver(context)
+    }
 }

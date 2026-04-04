@@ -15,10 +15,14 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.project.moviechecklist.ui.navigation.AppNavigation
 import com.project.moviechecklist.ui.screens.common.BottomNavBar
 import com.project.moviechecklist.ui.theme.MovieChecklistTheme
+import com.project.moviechecklist.worker.ReminderWorker
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -28,8 +32,6 @@ class MainActivity : ComponentActivity() {
     ) { isGranted: Boolean ->
         if (isGranted) {
             // Permission granted
-        } else {
-            // Permission denied
         }
     }
 
@@ -54,6 +56,24 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // Kiedy użytkownik wychodzi z apki na pulpit (onStop), 
+        // planujemy powiadomienie za 15 sekund.
+        val workRequest = OneTimeWorkRequestBuilder<ReminderWorker>()
+            .setInitialDelay(15, TimeUnit.SECONDS)
+            .build()
+
+        WorkManager.getInstance(this).enqueue(workRequest)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // Kiedy użytkownik wraca do apki (onStart), 
+        // anulujemy zaplanowane powiadomienie, żeby nie przeszkadzało w trakcie używania.
+        WorkManager.getInstance(this).cancelAllWork()
     }
 
     private fun checkNotificationPermission() {

@@ -1,6 +1,7 @@
 package com.project.moviechecklist.ui.navigation
 
 sealed class Screen(val route: String) {
+    object Auth : Screen("auth_screen")
     object Watched : Screen("watched_screen")
     object Planned : Screen("planned_screen")
     object Search : Screen("search_screen")

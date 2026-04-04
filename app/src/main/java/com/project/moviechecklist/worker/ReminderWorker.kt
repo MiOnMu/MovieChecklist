@@ -10,6 +10,7 @@ import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.google.firebase.auth.FirebaseAuth
 import com.project.moviechecklist.MainActivity
 import com.project.moviechecklist.R
 import com.project.moviechecklist.data.local.MovieDao
@@ -22,11 +23,14 @@ import kotlinx.coroutines.flow.first
 class ReminderWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    private val movieDao: MovieDao
+    private val movieDao: MovieDao,
+    private val auth: FirebaseAuth
 ) : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result {
-        val plannedMovies = movieDao.getMoviesByStatus(MovieStatus.PLANNED).first()
+        val userId = auth.currentUser?.uid ?: return Result.success()
+        
+        val plannedMovies = movieDao.getMoviesByStatus(MovieStatus.PLANNED, userId).first()
         
         if (plannedMovies.isNotEmpty()) {
             val movie = plannedMovies.random()

@@ -14,16 +14,15 @@ interface MovieDao {
     @Delete
     suspend fun deleteMovie(movie: MovieEntity)
 
-    @Query("SELECT * FROM movies WHERE id = :id")
-    fun getMovieById(id: Int): Flow<MovieEntity?>
+    @Query("SELECT * FROM movies WHERE id = :id AND userId = :userId")
+    fun getMovieById(id: Int, userId: String): Flow<MovieEntity?>
 
-    @Query("SELECT * FROM movies WHERE status = :status ORDER BY title ASC")
-    fun getMoviesByStatus(status: MovieStatus): Flow<List<MovieEntity>>
+    @Query("SELECT * FROM movies WHERE status = :status AND userId = :userId ORDER BY title ASC")
+    fun getMoviesByStatus(status: MovieStatus, userId: String): Flow<List<MovieEntity>>
 
-    @Query("SELECT * FROM movies WHERE title LIKE '%' || :query || '%'")
-    fun searchLocalMovies(query: String): Flow<List<MovieEntity>>
+    @Query("SELECT * FROM movies WHERE title LIKE '%' || :query || '%' AND userId = :userId")
+    fun searchLocalMovies(query: String, userId: String): Flow<List<MovieEntity>>
 
-    @Query("SELECT * FROM movies")
-    fun getAllMovies(): Flow<List<MovieEntity>>
-
+    @Query("SELECT * FROM movies WHERE userId = :userId")
+    fun getAllMovies(userId: String): Flow<List<MovieEntity>>
 }

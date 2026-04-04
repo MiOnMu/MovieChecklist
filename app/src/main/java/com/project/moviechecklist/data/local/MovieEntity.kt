@@ -1,19 +1,23 @@
 package com.project.moviechecklist.data.local
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
+import com.google.firebase.firestore.Exclude
 
-@Entity(tableName = "movies")
+@Entity(tableName = "movies", primaryKeys = ["id", "userId"])
 data class MovieEntity(
-    @PrimaryKey val id: Int,
-    val title: String,
-    val overview: String,
-    val posterPath: String?,
-    val backdropPath: String?,
-    val releaseDate: String?,
-    val voteAverage: Double?,
-    val genres: List<String>,
-    var status: MovieStatus?,
+    val id: Int = 0,
+    val userId: String = "",
+    val title: String = "",
+    val overview: String = "",
+    val posterPath: String? = null,
+    val backdropPath: String? = null,
+    val releaseDate: String? = null,
+    val voteAverage: Double? = null,
+    val genres: List<String> = emptyList(),
+    var status: MovieStatus? = null,
     var userRating: Int? = null,
-    val mediaType: String
-)
+    val mediaType: String = ""
+) {
+    // Parameterless constructor for Firestore
+    constructor() : this(0, "", "", "", null, null, null, null, emptyList(), null, null, "")
+}

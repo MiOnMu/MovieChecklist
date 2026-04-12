@@ -58,11 +58,12 @@ fun BottomNavBar(
                         item.onClick.invoke()
                     } else if (item.route != null) {
                         navController.navigate(item.route) {
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
+                            popUpTo(Screen.Watched.route) {
+                                inclusive = item.route == Screen.Watched.route
+                                saveState = false
                             }
                             launchSingleTop = true
-                            restoreState = true
+                            restoreState = false
                         }
                     }
                 }

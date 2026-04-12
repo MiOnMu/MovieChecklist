@@ -24,9 +24,9 @@ class PlannedViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
-    fun moveToWatched(movie: MovieEntity) {
+    fun moveToWatched(movie: MovieEntity, rating: Int? = null) {
         viewModelScope.launch {
-            val updatedMovie = movie.copy(status = MovieStatus.WATCHED)
+            val updatedMovie = movie.copy(status = MovieStatus.WATCHED, userRating = rating)
             repository.updateMovieInLibrary(updatedMovie)
         }
     }

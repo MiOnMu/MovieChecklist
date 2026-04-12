@@ -25,6 +25,7 @@ import com.project.moviechecklist.data.local.MovieEntity
 import com.project.moviechecklist.data.local.MovieStatus
 import com.project.moviechecklist.util.Constants
 import com.project.moviechecklist.util.Resource
+import com.project.moviechecklist.ui.screens.common.RatingPromptDialog
 import com.project.moviechecklist.ui.screens.common.StarRatingInput
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -245,38 +246,3 @@ fun AddOrChangeStatusButtons(movie: MovieEntity, viewModel: MovieDetailViewModel
 }
 
 
-@Composable
-fun RatingPromptDialog(
-    onDismiss: () -> Unit,
-    onConfirm: (Int?) -> Unit
-) {
-    var currentRating by remember { mutableIntStateOf(0) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Rate this Movie/Series") },
-        text = {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("How would you rate it (1-5 stars)?")
-                Spacer(modifier = Modifier.height(16.dp))
-                StarRatingInput(
-                    currentRating = currentRating,
-                    onRatingChange = { rating -> currentRating = rating }
-                )
-            }
-        },
-        confirmButton = {
-            Button(onClick = { onConfirm(if (currentRating == 0) null else currentRating) }) {
-                Text("Confirm")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = {
-                onConfirm(null)
-                onDismiss()
-            }) {
-                Text("Skip Rating")
-            }
-        }
-    )
-}

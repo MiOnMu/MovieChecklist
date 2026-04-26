@@ -12,6 +12,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.project.moviechecklist.ui.screens.common.RatingPromptDialog
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -35,6 +39,17 @@ fun PlannedScreen(
     viewModel: PlannedViewModel = hiltViewModel()
 ) {
     val plannedMovies by viewModel.plannedMovies.collectAsState()
+    var movieToRate by remember { mutableStateOf<MovieEntity?>(null) }
+
+    movieToRate?.let { movie ->
+        RatingPromptDialog(
+            onDismiss = { movieToRate = null },
+            onConfirm = { rating ->
+                viewModel.moveToWatched(movie, rating)
+                movieToRate = null
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -82,10 +97,7 @@ fun PlannedScreen(
                             navController.navigate(Screen.MovieDetail.createRoute(movie.id, movie.mediaType))
                         },
                         onMarkAsWatchedClick = {
-                            viewModel.moveToWatched(movie)
-                            navController.navigate(Screen.MovieDetail.createRoute(movie.id, movie.mediaType)) {
-                                launchSingleTop = true
-                            }
+                            movieToRate = movie
                         },
                         onRemoveClick = {
                             viewModel.removeFromPlanned(movie)

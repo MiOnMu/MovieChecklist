@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.dagger.hilt.android)
     id("kotlin-kapt")
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -46,7 +47,7 @@ android {
 
 dependencies {
     // Core Android & Compose
-    implementation(platform(libs.androidx.compose.bom)) // Check latest BOM
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
@@ -64,14 +65,17 @@ dependencies {
     // Hilt - Dependency Injection
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
-    // For Hilt Navigation Compose
     implementation(libs.androidx.hilt.navigation.compose)
 
+    // WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.hilt.work)
+    kapt(libs.androidx.hilt.compiler)
 
     // Room - Local Database
     implementation(libs.androidx.room.runtime)
     kapt(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.ktx) // Kotlin Coroutines support
+    implementation(libs.androidx.room.ktx)
 
     // Retrofit - Networking
     implementation(libs.retrofit)
@@ -89,4 +93,9 @@ dependencies {
     // Icons
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.material.icons.extended)
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
 }

@@ -22,4 +22,6 @@ interface MovieRepository {
 
     fun mapMovieDetailDtoToEntity(dto: MovieDetailDto, mediaTypeFromSearch: String): MovieEntity
     fun mapMovieResultDtoToEntity(dto: com.project.moviechecklist.data.remote.dto.MovieResultDto, status: MovieStatus = MovieStatus.PLANNED): MovieEntity
+    
+    suspend fun syncWithFirestore()
 }

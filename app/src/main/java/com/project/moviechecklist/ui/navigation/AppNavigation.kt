@@ -4,23 +4,41 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.project.moviechecklist.ui.screens.auth.AuthScreen
+import com.project.moviechecklist.ui.screens.auth.AuthViewModel
 import com.project.moviechecklist.ui.screens.detail.MovieDetailScreen
 import com.project.moviechecklist.ui.screens.planned.PlannedScreen
 import com.project.moviechecklist.ui.screens.search.SearchScreen
 import com.project.moviechecklist.ui.screens.watched.WatchedScreen
 
 @Composable
-fun AppNavigation(navController: NavHostController, paddingValues: PaddingValues) {
+fun AppNavigation(
+    navController: NavHostController, 
+    paddingValues: PaddingValues,
+    authViewModel: AuthViewModel = hiltViewModel()
+) {
+    val startDestination = if (authViewModel.isUserLoggedIn()) Screen.Watched.route else Screen.Auth.route
+
     NavHost(
         navController = navController,
-        startDestination = Screen.Watched.route,
+        startDestination = startDestination,
         modifier = Modifier.padding(paddingValues)
     ) {
+        composable(Screen.Auth.route) {
+            AuthScreen(
+                onAuthSuccess = {
+                    navController.navigate(Screen.Watched.route) {
+                        popUpTo(Screen.Auth.route) { inclusive = true }
+                    }
+                }
+            )
+        }
         composable(Screen.Watched.route) {
             WatchedScreen(navController = navController)
         }
